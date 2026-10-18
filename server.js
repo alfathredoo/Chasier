@@ -678,8 +678,8 @@ const server = createServer(async (request, response) => {
 });
 
 const port = Number(process.env.PORT || 3000);
-server.listen(port, '127.0.0.1', () => {
-  console.log(`Ruang Kasir berjalan di http://127.0.0.1:${port}`);
+server.listen(port, process.env.HOST || '0.0.0.0', () => {
+  console.log(`Ruang Kasir berjalan di port ${port}`);
   console.log(`Database SQLite: ${resolve(dataDirectory, 'ruang-kasir.sqlite')}`);
 });
 
