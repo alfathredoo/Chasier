@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f7f4">
+  <meta name="description" content="Ruang Kasir — aplikasi kasir sederhana untuk mengelola pesanan dan pembayaran.">
+  <title>Ruang Kasir — Point of Sale</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="./index.html" aria-label="Ruang Kasir beranda">
+        <span class="brand-mark" aria-hidden="true">r.</span>
+        <span class="brand-copy"><strong>ruang<span>kasir</span></strong><small>POINT OF SALE</small></span>
+      </a>
+
+      <button class="store-switcher" type="button" data-page="settings" aria-label="Buka pengaturan outlet">
+        <span class="store-avatar" aria-hidden="true">R</span>
+        <span class="store-copy"><strong id="store-switcher-name">Ruang Rasa</strong><small id="store-switcher-outlet">Outlet Surabaya</small></span>
+        <span class="switcher-chevron" aria-hidden="true">⌄</span>
+      </button>
+
+      <p class="nav-label">MENU UTAMA</p>
+      <nav class="side-nav" aria-label="Navigasi utama">
+        <button class="nav-item is-active" type="button" data-page="kasir" aria-current="page">
+          <span class="nav-icon" aria-hidden="true">▦</span> Kasir <span class="nav-current"></span>
+        </button>
+        <button class="nav-item" type="button" data-page="dashboard">
+          <span class="nav-icon" aria-hidden="true">▤</span> Ringkasan
+        </button>
+        <button class="nav-item" type="button" data-page="products">
+          <span class="nav-icon" aria-hidden="true">◇</span> Produk
+        </button>
+        <button class="nav-item" type="button" data-page="customers">
+          <span class="nav-icon" aria-hidden="true">♙</span> Pelanggan
+        </button>
+        <button class="nav-item history-nav-item" type="button" data-page="history">
+          <span class="nav-icon" aria-hidden="true">◷</span> Riwayat pembelian
+          <span class="history-nav-count" id="history-nav-count">0</span>
+        </button>
+      </nav>
+
+      <p class="nav-label nav-label-spaced">PREFERENSI</p>
+      <nav class="side-nav" aria-label="Pengaturan">
+        <button class="nav-item" type="button" data-page="settings">
+          <span class="nav-icon" aria-hidden="true">⚙</span> Pengaturan
+        </button>
+        <button class="nav-item" type="button" data-page="help">
+          <span class="nav-icon" aria-hidden="true">?</span> Pusat bantuan
+        </button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="upgrade-card">
+          <span class="upgrade-spark" aria-hidden="true">✳</span>
+          <strong>Bisnis makin rapi.</strong>
+          <p>Kelola penjualanmu dalam satu tempat.</p>
+          <a href="#ringkasan" data-page-link="dashboard">Lihat ringkasan <span aria-hidden="true">→</span></a>
+        </div>
+        <button class="profile-button" id="profile-button" type="button" aria-label="Kelola kasir dan pergantian shift">
+          <span class="profile-avatar" id="profile-avatar">NP</span>
+          <span class="profile-copy"><strong id="profile-name">Nadia Putri</strong><small id="profile-shift">Kasir · Shift pagi</small></span>
+          <span class="profile-menu" aria-hidden="true">•••</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="main-area" id="kasir">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-button" type="button" aria-label="Buka navigasi" aria-expanded="false" aria-controls="sidebar">☰</button>
+          <div>
+            <p class="breadcrumb"><span id="breadcrumb-store">Ruang Rasa</span><span>/</span><span id="breadcrumb-section">Kasir</span></p>
+            <h1 id="page-title">Kasir</h1>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <div class="connection-status"><span></span> Sistem aktif</div>
+          <button class="icon-button notification-button" type="button" aria-label="Notifikasi">
+            <span aria-hidden="true">♧</span><i></i>
+          </button>
+          <div class="today-date"><span class="date-icon" aria-hidden="true">▦</span><span id="today-date">Hari ini</span></div>
+        </div>
+      </header>
+
+      <div class="workspace">
+        <div class="app-error" id="app-error" role="alert" hidden></div>
+        <section class="catalog-panel" aria-labelledby="catalog-title">
+          <div class="welcome-row">
+            <div>
+              <p class="eyebrow">SELAMAT PAGI, NADIA <span aria-hidden="true">✦</span></p>
+              <h2 id="catalog-title">Mau pesan apa hari ini?</h2>
+              <p class="welcome-caption">Pilih menu favorit pelangganmu.</p>
+            </div>
+            <div class="sales-summary">
+              <span class="summary-icon" aria-hidden="true">↗</span>
+              <span class="summary-copy"><small>Transaksi hari ini</small><strong id="transaction-count">0 <span>pesanan</span></strong></span>
+              <span class="summary-divider"></span>
+              <span class="summary-copy sales-total-copy"><small>Total penjualan</small><strong id="sales-total">Rp0</strong></span>
+            </div>
+          </div>
+
+          <div class="catalog-toolbar">
+            <div class="search-box">
+              <span aria-hidden="true">⌕</span>
+              <input id="product-search" type="search" placeholder="Cari nama menu..." autocomplete="off" aria-label="Cari menu">
+              <kbd>⌘ K</kbd>
+            </div>
+            <button class="filter-button" type="button" id="sort-button" aria-label="Urutkan menu">
+              <span aria-hidden="true">☷</span> Populer <span class="filter-chevron" aria-hidden="true">⌄</span>
+            </button>
+          </div>
+
+          <div class="category-list" id="category-list" role="group" aria-label="Filter kategori">
+            <button class="category-chip is-selected" type="button" data-category="Semua">Semua menu <span>08</span></button>
+            <button class="category-chip" type="button" data-category="Kopi">☕ Kopi</button>
+            <button class="category-chip" type="button" data-category="Non-kopi">◌ Non-kopi</button>
+            <button class="category-chip" type="button" data-category="Makanan">♨ Makanan</button>
+            <button class="category-chip" type="button" data-category="Camilan">✳ Camilan</button>
+          </div>
+
+          <div class="section-heading">
+            <div><h3>Menu favorit</h3><span id="result-count">8 produk</span></div>
+            <button class="view-all-button" type="button" id="view-all">Lihat semua <span aria-hidden="true">→</span></button>
+          </div>
+          <div class="product-grid" id="product-grid" aria-live="polite"></div>
+          <p class="empty-state" id="empty-state" hidden>Menu tidak ditemukan. Coba kata kunci atau kategori lain.</p>
+        </section>
+
+        <aside class="order-panel" aria-labelledby="order-title">
+          <div class="order-heading">
+            <div><p class="eyebrow order-eyebrow">PESANAN BARU</p><h2 id="order-title">Pesanan <span class="order-count" id="cart-count">0</span></h2></div>
+            <button class="more-button" type="button" id="clear-cart" aria-label="Kosongkan pesanan" title="Kosongkan pesanan">•••</button>
+          </div>
+
+          <div class="order-meta">
+            <div><span class="meta-icon" aria-hidden="true">♙</span><span><small>Pelanggan</small><button type="button" class="customer-current" id="customer-name">Umum <span class="meta-chevron">⌄</span></button></span></div>
+            <button type="button" class="add-customer" id="customer-button" aria-label="Tambah atau pilih pelanggan">+</button>
+          </div>
+
+          <div class="order-type-row">
+            <span>Tipe pesanan</span>
+            <div class="segmented-control" role="group" aria-label="Tipe pesanan">
+              <button type="button" class="is-selected" data-order-type="Dine in">⌂ Dine in</button>
+              <button type="button" data-order-type="Take away">♧ Take away</button>
+            </div>
+          </div>
+
+          <div class="cart-items" id="cart-items" aria-live="polite">
+            <div class="cart-empty">
+              <span class="empty-bag" aria-hidden="true">＋</span>
+              <strong>Belum ada pesanan</strong>
+              <span>Pilih menu untuk memulai transaksi.</span>
+            </div>
+          </div>
+
+          <div class="order-note">
+            <label for="order-note-input"><span aria-hidden="true">☷</span> Catatan pesanan</label>
+            <input id="order-note-input" type="text" placeholder="Contoh: tanpa gula, es sedikit..." maxlength="100">
+          </div>
+
+          <div class="bill-summary">
+            <div><span>Subtotal</span><strong id="subtotal">Rp0</strong></div>
+            <div><span>Pajak <small>(10%)</small></span><strong id="tax">Rp0</strong></div>
+            <div class="bill-total"><span>Total pembayaran</span><strong id="total">Rp0</strong></div>
+          </div>
+
+          <button class="checkout-button" id="checkout-button" type="button" disabled>
+            <span>Proses pembayaran</span><span aria-hidden="true">→</span>
+          </button>
+          <p class="checkout-hint" id="checkout-hint" hidden></p>
+          <p class="secure-note"><span aria-hidden="true">♢</span> Transaksi aman &amp; tercatat otomatis</p>
+        </aside>
+        <section class="management-view" id="management-view" hidden aria-live="polite">
+          <div id="management-content"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="payment-modal" hidden>
+    <section class="payment-dialog" role="dialog" aria-modal="true" aria-labelledby="payment-title">
+      <button class="modal-close" type="button" id="close-payment" aria-label="Tutup">×</button>
+      <span class="payment-mark" aria-hidden="true">↗</span>
+      <p class="eyebrow">LANGKAH TERAKHIR</p>
+      <h2 id="payment-title">Selesaikan pembayaran</h2>
+      <p class="payment-description">Pilih metode pembayaran untuk pesanan ini.</p>
+      <div class="payment-total"><span>Total yang harus dibayar</span><strong id="payment-total">Rp0</strong></div>
+      <fieldset class="payment-methods">
+        <legend>Metode pembayaran</legend>
+        <label class="payment-option is-selected"><input type="radio" name="payment-method" value="Tunai" checked><span class="payment-option-icon">▣</span><span><strong>Tunai</strong><small>Bayar dengan uang tunai</small></span><i></i></label>
+        <label class="payment-option"><input type="radio" name="payment-method" value="QRIS"><span class="payment-option-icon">▦</span><span><strong>QRIS</strong><small>Pindai kode QR pelanggan</small></span><i></i></label>
+        <label class="payment-option"><input type="radio" name="payment-method" value="Kartu debit"><span class="payment-option-icon">▤</span><span><strong>Kartu debit</strong><small>Debit atau kartu bank</small></span><i></i></label>
+      </fieldset>
+      <section class="qris-panel" id="qris-panel" aria-labelledby="qris-title" hidden>
+        <div class="qris-heading"><strong id="qris-title">Pembayaran QRIS</strong><span class="qris-logo">QRIS</span></div>
+        <div class="qris-preview" id="qris-preview">
+          <img id="qris-image" alt="Kode QRIS merchant">
+          <div class="qris-placeholder" id="qris-placeholder">
+            <span aria-hidden="true">▦</span>
+            <strong>QRIS belum dipasang</strong>
+            <small>Unggah gambar QRIS resmi dari penyedia pembayaranmu.</small>
+          </div>
+        </div>
+        <label class="qris-upload-button" for="qris-upload"><span aria-hidden="true">↑</span> <span id="qris-upload-label">Pasang QRIS merchant</span></label>
+        <input id="qris-upload" class="visually-hidden" type="file" accept="image/png,image/jpeg,image/webp">
+        <p class="qris-instruction" id="qris-instruction">Kode belum tersedia. Pembayaran QRIS belum dapat dikonfirmasi.</p>
+      </section>
+      <label class="cash-amount" for="cash-amount-input">Jumlah uang diterima
+        <span class="currency-input"><span>Rp</span><input id="cash-amount-input" type="number" min="0" inputmode="numeric" placeholder="Masukkan jumlah"></span>
+      </label>
+      <div class="change-row" id="change-row"><span>Kembalian</span><strong id="change-amount">Rp0</strong></div>
+      <p class="payment-error" id="payment-error" role="alert" hidden></p>
+      <button class="confirm-payment-button" id="confirm-payment" type="button">Konfirmasi pembayaran <span aria-hidden="true">→</span></button>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="customer-modal" hidden>
+    <section class="customer-dialog" role="dialog" aria-modal="true" aria-labelledby="customer-title">
+      <button class="modal-close" type="button" id="close-customer" aria-label="Tutup">×</button>
+      <span class="payment-mark" aria-hidden="true">♙</span>
+      <p class="eyebrow">DATA PELANGGAN</p>
+      <h2 id="customer-title">Pilih pelanggan</h2>
+      <p class="payment-description">Nama pelanggan akan muncul di riwayat pembelian.</p>
+      <label class="customer-field" for="customer-input">Nama pelanggan
+        <input id="customer-input" type="text" maxlength="80" autocomplete="name" list="customer-suggestions" placeholder="Contoh: Ayu Pratama">
+      </label>
+      <label class="customer-field" for="customer-phone-input">Nomor telepon <span>(opsional)</span>
+        <input id="customer-phone-input" type="tel" maxlength="24" autocomplete="tel" placeholder="Contoh: 0812 3456 7890">
+      </label>
+      <datalist id="customer-suggestions"></datalist>
+      <button class="confirm-payment-button" id="save-customer" type="button">Simpan pelanggan <span aria-hidden="true">→</span></button>
+      <button class="guest-button" type="button" id="select-guest">Lanjut sebagai pelanggan umum</button>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="cashier-modal" hidden>
+    <section class="customer-dialog cashier-dialog" role="dialog" aria-modal="true" aria-labelledby="cashier-title">
+      <button class="modal-close" type="button" id="close-cashier" aria-label="Tutup">×</button>
+      <span class="payment-mark" aria-hidden="true">♙</span>
+      <p class="eyebrow">AKUN PETUGAS</p>
+      <h2 id="cashier-title">Kasir &amp; pergantian shift</h2>
+      <p class="payment-description">Setiap transaksi berikutnya akan mencatat kasir dan shift yang sedang aktif.</p>
+      <div class="cashier-active-card" id="cashier-active-card"></div>
+      <form id="cashier-form">
+        <label class="customer-field" for="cashier-name-input">Nama kasir
+          <input id="cashier-name-input" name="name" type="text" required maxlength="80" autocomplete="name" placeholder="Nama kasir yang bertugas">
+        </label>
+        <label class="customer-field" for="cashier-phone-input">Nomor HP kasir
+          <input id="cashier-phone-input" name="phone" type="tel" required maxlength="24" autocomplete="tel" placeholder="Contoh: 0812 3456 7890">
+        </label>
+        <label class="customer-field" for="cashier-shift-input">Shift yang dimulai
+          <select id="cashier-shift-input" name="shiftName" required>
+            <option value="Shift pagi">Shift pagi</option>
+            <option value="Shift siang">Shift siang</option>
+            <option value="Shift malam">Shift malam</option>
+          </select>
+        </label>
+        <p class="payment-error" id="cashier-error" role="alert" hidden></p>
+        <div class="cashier-actions">
+          <button class="secondary-action" id="save-cashier" type="button">Simpan data kasir</button>
+          <button class="confirm-payment-button" id="start-shift" type="submit">Mulai shift / ganti kasir <span aria-hidden="true">→</span></button>
+        </div>
+      </form>
+      <button class="end-shift-button" id="end-shift" type="button">Akhiri shift saat ini</button>
+      <div class="shift-history">
+        <strong>Shift terakhir</strong>
+        <div id="shift-history-list"></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop history-backdrop" id="history-modal" hidden>
+    <section class="history-dialog" role="dialog" aria-modal="true" aria-labelledby="history-title">
+      <div class="history-heading">
+        <div><p class="eyebrow">TRANSAKSI TOKO</p><h2 id="history-title">Riwayat pembelian</h2><p>Cari transaksi berdasarkan nama pelanggan atau nomor pesanan.</p></div>
+        <button class="modal-close" type="button" id="close-history" aria-label="Tutup">×</button>
+      </div>
+      <label class="history-search"><span aria-hidden="true">⌕</span><input id="history-search-input" type="search" placeholder="Cari nama pelanggan atau nomor pesanan..." aria-label="Cari riwayat pembelian"></label>
+      <div class="history-summary" id="history-summary"></div>
+      <div class="history-list" id="history-list" aria-live="polite"></div>
+      <p class="history-empty" id="history-empty" hidden>Riwayat pembelian belum tersedia. Transaksi yang selesai akan tercatat di sini.</p>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="product-modal" hidden>
+    <section class="customer-dialog product-dialog" role="dialog" aria-modal="true" aria-labelledby="product-form-title">
+      <button class="modal-close" type="button" id="close-product" aria-label="Tutup">×</button>
+      <span class="payment-mark" aria-hidden="true">◇</span>
+      <p class="eyebrow">KATALOG TOKO</p>
+      <h2 id="product-form-title">Tambah produk</h2>
+      <p class="payment-description">Produk yang disimpan langsung tersedia pada halaman kasir.</p>
+      <form id="product-form">
+        <div class="product-form-grid">
+          <label class="customer-field product-field-wide">Nama produk<input name="name" required maxlength="100" placeholder="Contoh: Es Kopi Susu"></label>
+          <label class="customer-field">Kategori<input name="category" required maxlength="60" list="product-categories" placeholder="Contoh: Kopi"></label>
+          <label class="customer-field">Ikon emoji<input name="emoji" maxlength="16" value="🍽️" placeholder="🍽️"></label>
+          <label class="customer-field">Harga (Rp)<input name="price" type="number" min="0" step="1" required placeholder="25000"></label>
+          <label class="customer-field">Stok awal<input name="stock" type="number" min="0" step="1" required value="0"></label>
+          <label class="customer-field">Label produk<input name="badge" maxlength="24" value="MENU" placeholder="FAVORIT"></label>
+          <label class="customer-field">Warna kartu<input name="color" type="color" value="#edf2e8"></label>
+          <label class="customer-field product-field-wide">Deskripsi<input name="description" maxlength="250" placeholder="Deskripsi singkat produk"></label>
+        </div>
+        <p class="payment-error" id="product-error" role="alert" hidden></p>
+        <button class="confirm-payment-button" id="save-product" type="submit">Simpan produk <span aria-hidden="true">→</span></button>
+      </form>
+      <datalist id="product-categories"></datalist>
+    </section>
+  </div>
+
+  <div class="success-backdrop" id="success-modal" hidden>
+    <section class="success-dialog" role="dialog" aria-modal="true" aria-labelledby="success-title">
+      <span class="success-check" aria-hidden="true">✓</span>
+      <p class="eyebrow">TRANSAKSI BERHASIL</p>
+      <h2 id="success-title">Pesanan selesai!</h2>
+      <p id="success-message">Pembayaran berhasil dicatat.</p>
+      <div class="receipt-summary"><span>Nomor transaksi</span><strong id="receipt-number">RR-0001</strong><span>Total dibayar</span><strong id="receipt-total">Rp0</strong></div>
+      <div class="print-actions">
+        <button class="secondary-action" id="print-receipt" type="button"><span aria-hidden="true">▤</span> Cetak struk</button>
+        <button class="secondary-action" id="print-kitchen" type="button"><span aria-hidden="true">♨</span> Cetak dapur</button>
+      </div>
+      <button class="confirm-payment-button" id="new-order" type="button">Buat pesanan baru <span aria-hidden="true">→</span></button>
+    </section>
+  </div>
+
+  <section id="print-area" hidden aria-live="polite"></section>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
